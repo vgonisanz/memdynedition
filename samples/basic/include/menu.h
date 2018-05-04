@@ -25,6 +25,8 @@ private:
 
     void printOptions();
     void getInput();
+    void processOption();
+    inline bool isReturnCarriage();
     void quit();
 };
 

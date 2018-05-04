@@ -33,55 +33,52 @@ void Menu::quit()
     _quit = true;
 }
 
+void Menu::processOption()
+{
+    switch (_userInput)
+    {
+        case 'q':
+            quit();
+            break;
+        case '1':
+            _player.printStats();
+            break;
+        case '2':
+            _player.printItems();
+            break;
+        case '3':
+            _player.useBomb();
+            break;
+        case '\n':
+            break;
+        default:
+            LOGE("Option invalid!");
+            break;
+    }
+}
+
+bool Menu::isReturnCarriage()
+{
+    return (_userInput == '\n');
+}
+
 void Menu::run()
 {
     LOGI("Menu is running...");
 
     while (!_quit)
     {
-        printOptions();
+        /* Avoid processing return carriage.
+         * I don't like how multioption is processed
+         * nearly works but....
+         */
+        if (!isReturnCarriage())
+            printOptions();
+
         getInput();
 
-        switch (_userInput)
-        {
-            case 'q':
-                quit();
-                break;
-            case '1':
-                _player.printStats();
-                break;
-            case '2':
-                _player.printItems();
-                break;
-            case '3':
-                _player.useBomb();
-                break;
-            case '\n':
-                break;
-            default:
-                LOGE("Option invalid!");
-                break;
-        }
-        //
-        // switch (std::stoi(in))
-        // {
-        //   case `1`:
-        //      // Do menu option one
-        //      break;
-        //   case `2`:
-        //      // Do menu option two
-        //      break;
-        //   case `3`:
-        //      // Do menu option three
-        //      break;
-        //   case `n`:
-        //      // Do menu option "n"
-        //      break;
-        //   case `s`:
-        //      // Do menu option "s"
-        //      break;
-        //
-        // }
+        if (!isReturnCarriage())
+            processOption();
     }
     LOGI("Quit menu!");
 }
