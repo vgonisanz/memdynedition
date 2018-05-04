@@ -1,12 +1,13 @@
 #include "core.h"
 
-#define LOG_TAG "basic-sample"
+#define LOG_TAG "basicsample"
 #include "config.h"
 
 int main()
 {
     LOGI("Executing basic sample...");
-    my_main_project::test();
+    memdynedition::testCRC32();
+    memdynedition::testCRC32PerDW();
 
     return 0;
 }
