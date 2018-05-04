@@ -25,10 +25,6 @@ namespace memdynedition
  */
 void crc32(uint32_t *crc, void *buf, uint16_t size);
 
-/**
- * @brief Process a buffer to generate CRC-32 using crc32 and flip propertly the data
- */
-
 }   /* namespace memdynedition */
 
 #endif /* __CRC32_H */
