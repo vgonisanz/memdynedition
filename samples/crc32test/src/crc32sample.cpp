@@ -25,7 +25,6 @@ void testCRC32()
     };
 
     uint8_t *buffer = (uint8_t *)bufferInput;
-    uint32_t offset = 0;
     uint32_t result = 0;    /* seed null */
 
     crc32(&result, buffer, sizeof(bufferInput));
