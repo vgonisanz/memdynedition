@@ -2,6 +2,7 @@
 #define __PLAYER_H
 
 #include <stdint.h>
+#include "securizer.h"
 
 namespace memdynedition
 {
@@ -9,7 +10,7 @@ namespace memdynedition
 class Player
 {
 public:
-    Player() = default;
+    Player();
     ~Player() = default;
 
     struct Items
@@ -57,6 +58,7 @@ public:
     void useBomb();
 private:
     Items _items;
+    Securizer _secItems;
     Stats _stats;
 };
 

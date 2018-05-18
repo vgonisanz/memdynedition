@@ -6,6 +6,15 @@
 namespace memdynedition
 {
 
+Player::Player()
+{
+    _secItems.setData(&_items);
+
+    /* Update CRC */
+    uint32_t itemsCRC32 = _secItems.update();
+    LOGI("Initial items CRC32: 0x%08X", itemsCRC32);
+}
+
 void Player::printItems()
 {
     LOGI("\nPlayer items are:\n\t* coins: %u\n\t* bombs: %u\n\t* keys: %u",
@@ -25,8 +34,24 @@ void Player::useBomb()
 {
     if (_items.bombs > 0)
     {
+        /* Check */
+        bool isValid = _secItems.check();
+        if (isValid)
+        {
+            LOGI("The data has not been altered.");
+        }
+        else
+        {
+            LOGE("The data was externally modified!!");
+        }
+
+        /* Process: TODO check/think about a secure edit using Securizer class  */
         _items.bombs -= 1;
         LOGI("Using bomb! remaining: %u", _items.bombs);
+
+        /* Update */
+        uint32_t itemsCRC32 = _secItems.update();
+        LOGI("New items CRC32: 0x%08X", itemsCRC32);
     }
     else
     {
