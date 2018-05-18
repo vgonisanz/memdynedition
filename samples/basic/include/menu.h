@@ -10,6 +10,8 @@
 namespace memdynedition
 {
 
+constexpr unsigned int hash(const char* str, int h = 0);    /* Used to switch string */
+
 class Menu
 {
 public:
@@ -21,12 +23,11 @@ public:
 private:
     Player _player;
     bool _quit;
-    uint8_t _userInput;
+    std::string _userInput;
 
     void printOptions();
     void getInput();
     void processOption();
-    inline bool isReturnCarriage();
     void quit();
 };
 

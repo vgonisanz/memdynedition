@@ -1,4 +1,5 @@
 #include "menu.h"
+#include <unistd.h>
 
 #define LOG_TAG "menu"
 #include "config.h"
@@ -6,10 +7,15 @@
 namespace memdynedition
 {
 
+constexpr unsigned int hash(const char* str, int h)
+{
+    return !str[h] ? 5381 : (hash(str, h+1)*33) ^ str[h];
+}
+
 Menu::Menu():
 _player(),
 _quit(false),
-_userInput(0) {};
+_userInput("") {};
 
 void Menu::printOptions()
 {
@@ -24,8 +30,12 @@ void Menu::printOptions()
 
 void Menu::getInput()
 {
-    _userInput = getchar();
-    getchar();  /* Ignore \n */
+    _userInput = "";
+    while(_userInput == "")
+    {
+        getline(std::cin, _userInput);
+        usleep(1000);
+    }
 }
 
 void Menu::quit()
@@ -35,31 +45,27 @@ void Menu::quit()
 
 void Menu::processOption()
 {
-    switch (_userInput)
+    switch (hash(_userInput.c_str()))
     {
-        case 'q':
+        case hash("q"):
             quit();
             break;
-        case '1':
+        case hash("1"):
             _player.printStats();
             break;
-        case '2':
+        case hash("2"):
             _player.printItems();
             break;
-        case '3':
+        case hash("3"):
             _player.useBomb();
             break;
-        case '\n':
-            break;
+        // case '\n':
+        //     break;
         default:
             LOGE("Option invalid!");
+            //std::cin.get();
             break;
     }
-}
-
-bool Menu::isReturnCarriage()
-{
-    return (_userInput == '\n');
 }
 
 void Menu::run()
@@ -68,17 +74,9 @@ void Menu::run()
 
     while (!_quit)
     {
-        /* Avoid processing return carriage.
-         * I don't like how multioption is processed
-         * nearly works but....
-         */
-        if (!isReturnCarriage())
-            printOptions();
-
+        printOptions();
         getInput();
-
-        if (!isReturnCarriage())
-            processOption();
+        processOption();
     }
     LOGI("Quit menu!");
 }
