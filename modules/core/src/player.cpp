@@ -8,10 +8,11 @@ namespace memdynedition
 
 Player::Player()
 {
-    _secItems.setData(&_items);
+    _secItems.setData(&_items, sizeof(_items));
+    LOGD("Set up secure struct items with size: %u", sizeof(_items));
 
     /* Update CRC */
-    uint32_t itemsCRC32 = _secItems.update();
+    uint32_t itemsCRC32 = _secItems.updateCRC32();
     LOGI("Initial items CRC32: 0x%08X", itemsCRC32);
 }
 
@@ -30,32 +31,57 @@ void Player::printStats()
         _stats.willpower, _stats.perception, _stats.luck);
 }
 
+bool Player::checkIntegrity()
+{
+    /* Check */
+    bool isValid = _secItems.check();
+    if (isValid)
+    {
+        LOGI("The data has not been altered.");
+    }
+    else
+    {
+        LOGE("The data was externally modified!!");
+    }
+    return isValid;
+}
+
 void Player::useBomb()
 {
     if (_items.bombs > 0)
     {
-        /* Check */
-        bool isValid = _secItems.check();
-        if (isValid)
-        {
-            LOGI("The data has not been altered.");
-        }
-        else
-        {
-            LOGE("The data was externally modified!!");
-        }
+        checkIntegrity();
 
-        /* Process: TODO check/think about a secure edit using Securizer class  */
+        /* Edit value manually */
         _items.bombs -= 1;
         LOGI("Using bomb! remaining: %u", _items.bombs);
 
-        /* Update */
-        uint32_t itemsCRC32 = _secItems.update();
+        /* Update manually CRC32 */
+        uint32_t itemsCRC32 = _secItems.updateCRC32();
         LOGI("New items CRC32: 0x%08X", itemsCRC32);
     }
     else
     {
         LOGI("You have NO bombs!");
+    }
+}
+
+void Player::dropCoin()
+{
+    if (_items.coins > 0)
+    {
+        checkIntegrity();
+
+        /* Assign value automatically */
+        if(!_secItems.assign<uint32_t>(&_items.coins, _items.coins - 1))
+            LOGE("Error assigning coins");
+            
+        LOGI("Dropping a coin! remaining: %u", _items.coins);
+        LOGI("New items CRC32: 0x%08X", _secItems.getCRC32());
+    }
+    else
+    {
+        LOGI("You have NO coins!");
     }
 }
 

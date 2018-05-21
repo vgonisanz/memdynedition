@@ -13,9 +13,10 @@ _crc32(0)
 {
 };
 
-void Securizer::setData(void *data)
+void Securizer::setData(void *data, uint32_t size)
 {
     _data = data;
+    _size = size;
 }
 
 uint32_t Securizer::process()
@@ -23,11 +24,11 @@ uint32_t Securizer::process()
     uint8_t *buffer = (uint8_t *)_data;
     uint32_t result = 0;    /* seed null */
 
-    crc32(&result, buffer, sizeof(_data));
+    crc32(&result, buffer, _size);
     return swap_uint32(result);
 }
 
-uint32_t Securizer::update()
+uint32_t Securizer::updateCRC32()
 {
     _crc32 = process();
     return _crc32;

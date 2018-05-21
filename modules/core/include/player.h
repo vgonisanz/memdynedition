@@ -56,10 +56,13 @@ public:
     void printItems();
     void printStats();
     void useBomb();
+    void dropCoin();
 private:
     Items _items;
     Securizer _secItems;
     Stats _stats;
+
+    bool checkIntegrity();
 };
 
 }   /* namespace memdynedition */
