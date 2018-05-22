@@ -1,0 +1,3 @@
+[submodule "3rdParty/schifra"]
+	path = 3rdParty/schifra
+	url = git@github.com:ArashPartow/schifra.git
