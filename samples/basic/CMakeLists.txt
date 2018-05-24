@@ -59,4 +59,4 @@ install(TARGETS ${PROJ_NAME}
         )
 
 #PRINTBASICINFO(${PROJ_NAME})						# Macro cmake_tools to print, uncomment to add info
-message("- Module ${PROJ_NAME} added!")				# Out info
+message("- Sample ${PROJ_NAME} added!")				# Out info
