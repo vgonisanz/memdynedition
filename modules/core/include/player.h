@@ -2,7 +2,6 @@
 #define __PLAYER_H
 
 #include <stdint.h>
-#include "securizer.h"
 
 namespace memdynedition
 {
@@ -11,7 +10,7 @@ class Player
 {
 public:
     Player();
-    ~Player() = default;
+    virtual ~Player() = default;
 
     struct Items
     {
@@ -55,14 +54,14 @@ public:
 
     void printItems();
     void printStats();
-    void useBomb();
-    void dropCoin();
-private:
+
+    virtual void useBomb();
+    virtual void dropCoin();
+protected:
     Items _items;
-    Securizer _secItems;
     Stats _stats;
 
-    bool checkIntegrity();
+    virtual bool checkIntegrity();
 };
 
 }   /* namespace memdynedition */
