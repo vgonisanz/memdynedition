@@ -1,6 +1,7 @@
 #include "menu.h"
+#include "player.h"
 
-#define LOG_TAG "basicsample"
+#define LOG_TAG "playersample"
 #include "config.h"
 
 using namespace memdynedition;

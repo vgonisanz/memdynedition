@@ -20,7 +20,7 @@
 
 # Sample step I: Set PROJ_NAME variable
 # ------------------------------------------------------------------------------------------------------
-set(PROJ_NAME basicsample)
+set(PROJ_NAME playercrc32sample)
 project(${PROJ_NAME})
 message("+ Adding sample ${PROJ_NAME} ")
 
