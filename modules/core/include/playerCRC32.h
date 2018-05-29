@@ -14,12 +14,12 @@ class PlayerCRC32 : public Player
 public:
     PlayerCRC32();
 
-    void useBomb();
-    void dropCoin();
+    void useBomb() override;
+    void dropCoin() override;
 private:
     Securizer _secItems;
 
-    bool checkIntegrity();
+    bool checkIntegrity() override;
 };
 
 }   /* namespace memdynedition */
