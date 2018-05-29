@@ -1,3 +1,3 @@
-# Reed Solomon example
+# Reed Solomon memory backup example
 
 ...

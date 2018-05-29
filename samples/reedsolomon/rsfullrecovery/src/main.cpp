@@ -9,36 +9,36 @@
 #include "schifra_error_processes.hpp"
 #include "schifra_reed_solomon_bitio.hpp"
 
-#define LOG_TAG "rsstruct"
+#define LOG_TAG "rsfullrecoverysample"
 #include "config.h"
 
 using namespace memdynedition;
 
 /**
- * This example encode data from message strings.
- * Add errors before decoding.
- * Check if is possible to recovery the original message and under
- * what circumstances.
+ * Generator polynomial related with redundance.
+ * k = data
+ * r = redundance
+ * m = bits per symbol
+ * n = bits per block = r + k = 2^m - 1
+ * t = error correction = (n - k) / 2
  *
- *     k = data
- *     r = redundance
- *     m = bits per symbol
- *     n = bits per block = r + k = 2^m - 1
- *     t = error correction = (n - k) / 2
+ * Assumptions:
+ * - Only data will be corrupted, no redundancy.
+ * - To get full recovery n = 3 * k --> r = 2 * k.
+ * - n = 255 so r in this case shall be 170.
  *
- *      Then, GF(2^m) and RS [n, k, n - k + 1] for use is GF(2^8) and RS [255, 32, 224]
+ * Then, GF(2^m) and RS [n, k, n - k + 1] for use is GF(2^8) and RS [255, 85, 171]
  */
 
-/* Finite Field Parameters */
+/* Finite Field Parameters - index + root count shall be < field size */
 const std::size_t field_descriptor                =   8;    /* m = bit per symbol */
-const std::size_t generator_polynomial_index      = 120;    /* normally set to 0 (first consecutive root = 1) */
-const std::size_t generator_polynomial_root_count =  32;    /* root shall be equal to redundance */
+const std::size_t generator_polynomial_index      =   0;    /* normally set to 0 (first consecutive root = 1) */
+const std::size_t generator_polynomial_root_count = 170;    /* root shall be equal to redundance */
 
 /* Reed-Solomon parameters */
-const std::size_t code_length = 255;                        /* 2^(bit per symbol) - 1 = 2^8 - 1 */
-const std::size_t fec_length = 32;                          /* r = redundance */
-const std::size_t data_length = code_length - fec_length;   /* k = n - r. Usually code encodes k = 223, so parity are 32 to get 255-symbol block */
-
+const std::size_t code_length = 255;                        /* n = 2^m - 1 = 2^8 - 1 bits per block = field size */
+const std::size_t fec_length =  170;                        /* r = redundance */
+const std::size_t data_length = code_length - fec_length;   /* k = n - r */
 
 /* Instantiate Finite Field and Generator Polynomials */
 const schifra::galois::field field(field_descriptor,
@@ -213,6 +213,13 @@ bool decodeAndRestore(schifra::reed_solomon::block<code_length,fec_length> &bloc
 
 int main()
 {
+    /*
+     * This example encode data into blocks.
+     * Then edit in different ways the data info from a block.
+     * And after all, decode/recover data if it is possible.
+     *
+     * Note: decode function print data as string, so print ascii code
+     */
     LOGI("Executing Reed Solomon struct sample...");
 
     std::cout << std::endl;
@@ -232,7 +239,7 @@ int main()
 
     (void)encode(message, block);
 
-    /* Edit message, this data will be copy (only data) into block */
+    /* Edit message a little, this data will be copy (only data) into block */
     message = "This is FAKE message.";
 
     /* Add only data to old block */
@@ -241,65 +248,18 @@ int main()
     /* Check if changes are undo */
     (void)decode(block);
 
-    /* Example II: Try to code and decode a message, change a more than allowed errors (4 errors < 16) and decode */
+    // /* Example II: Try to code and decode a message, change a more than allowed errors (4 errors < 16) and decode */
     message.reserve(code_length);
     message.assign(code_length, 0x00);
     message = "This is real message.";
 
     (void)encode(message, block);
 
-    message = "XXXXXXXXXXX this message changed too much, no way to recovery it! :-D";
+    /* Edit whole message, error recovery shall do it */
+    message = "XXXXXXXXXXXXXXXXXXXXX";
     (void)editData(message, block);
 
     (void)decode(block);
-
-    /* Example III: Try it copying struct content into an string , edit a little, and decode */
-    static struct
-    {
-        int32_t x;
-        int32_t y;
-        int32_t z;
-    } coordinate =
-    {   .x = 120,   /* x ASCII code, using printable data */
-        .y = 121,
-        .z = 122
-    };
-
-    std::cout << std::endl << "Origin coordinate struct has " << sizeof(coordinate) << " bytes." << std::endl;
-    std::cout << "Coordinate struct contains: [" << coordinate.x << ", " << coordinate.y << ", " << coordinate.z << "]" << std::endl;
-
-    uint8_t *buffer = (uint8_t *)&coordinate;   /* Get a pointer to the struct to store as message */
-
-    message.reserve(code_length);
-    message.assign(code_length, 0x00);
-    message.assign(buffer, buffer + sizeof(coordinate));    /* Copy data to string, bad performance */
-
-    (void)encode(message, block);
-
-    /* Edit coordinates and convert again to message */
-    coordinate.x = 88;
-    coordinate.y = 89;
-    coordinate.z = 90;
-    message.assign(buffer, buffer + sizeof(coordinate));    /* Copy data to string, bad performance */
-
-    std::cout << "Coordinate struct is edit with: [" << coordinate.x << ", " << coordinate.y << ", " << coordinate.z << "]" << std::endl;
-    (void)editData(message, block);
-    std::cout << "Decode without restoring data" << std::endl;
-    (void)decode(block);    /* This decode do not restore changes */
-
-    /* Example IV: Try it copying struct directly with a pointer to the array.
-        Pointer contain XYZ data from example III! */
-    (void)encode(buffer, sizeof(coordinate), block);
-
-    /* Try to restore coordinates but decode check content with redundant data */
-    coordinate.x = 120;
-    coordinate.y = 121;
-    coordinate.z = 122;
-    std::cout << "Coordinate struct is edit with: [" << coordinate.x << ", " << coordinate.y << ", " << coordinate.z << "]" << std::endl;
-    (void)editData(buffer, sizeof(coordinate), block);
-    std::cout << "Decode restoring changed data" << std::endl;
-    (void)decodeAndRestore(block, buffer, sizeof(coordinate));
-    std::cout << "Coordinate struct contains: [" << coordinate.x << ", " << coordinate.y << ", " << coordinate.z << "]" << std::endl;
 
     std::cout << "-------------------------------------------------------------------------" << std::endl;
     std::cout << "\t\tAll messages has been processed!" << std::endl;

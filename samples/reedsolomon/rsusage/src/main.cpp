@@ -8,15 +8,38 @@
 #include "schifra_reed_solomon_block.hpp"
 #include "schifra_error_processes.hpp"
 
-#define LOG_TAG "reedsolomonsample"
+#define LOG_TAG "rsusage"
 #include "config.h"
 
 using namespace memdynedition;
 
+/**
+ * This example encode data with messages and decode it.
+ * Errors are added to check if works or not and in what conditions.
+ *
+ * Conceptual resources:
+ *      * Reed–Solomon error correction:    https://en.wikipedia.org/wiki/Reed%E2%80%93Solomon_error_correction
+ *      * Galois Field:                     https://en.wikipedia.org/wiki/Finite_field_arithmetic
+ *      * Explanation:                      https://www.cs.cmu.edu/~guyb/realworld/reedsolomon/reed_solomon_codes.html
+ *
+ *     k = data
+ *     r = redundance
+ *     m = bits per symbol
+ *     n = bits per block = r + k = 2^m - 1
+ *     t = error correction = (n - k) / 2
+ *
+ *     Then, GF(2^m) and RS [n, k, n - k + 1] for use is GF(2^8) and RS [255, 32, 224]
+ */
+
 /* Finite Field Parameters */
-const std::size_t field_descriptor                =   8;    /* bit per symbol */
-const std::size_t generator_polynomial_index      = 120;
-const std::size_t generator_polynomial_root_count =  32;
+const std::size_t field_descriptor                =   8;    /* m = bit per symbol */
+const std::size_t generator_polynomial_index      = 120;    /* normally set to 0 (first consecutive root = 1) */
+const std::size_t generator_polynomial_root_count =  32;    /* root shall be equal to redundance */
+
+/* Reed-Solomon parameters */
+const std::size_t code_length = 255;                        /* n = 2^(bit per symbol) - 1 = 2^8 - 1 */
+const std::size_t fec_length = 32;                          /* r = redundance */
+const std::size_t data_length = code_length - fec_length;   /* k = n - r. Usually code encodes k = 223, so parity are 32 to get 255-symbol block */
 
 /* Instantiate Finite Field and Generator Polynomials */
 const schifra::galois::field field(field_descriptor,
@@ -24,11 +47,6 @@ const schifra::galois::field field(field_descriptor,
                                    schifra::galois::primitive_polynomial06);
 
 schifra::galois::field_polynomial generator_polynomial(field);
-
-/* Reed-Solomon parameters */
-const std::size_t code_length = 255;
-const std::size_t fec_length = 32;
-const std::size_t data_length = code_length - fec_length;
 
 /* Instantiate Encoder and Decoder (Codec) */
 typedef schifra::reed_solomon::encoder<code_length, fec_length, data_length> encoder_t;
@@ -152,11 +170,6 @@ bool process(std::string message, const std::size_t& error_count, const std::siz
 
 int main()
 {
-    /*
-     * Conceptual resources:
-     *      * Reed–Solomon error correction:    https://en.wikipedia.org/wiki/Reed%E2%80%93Solomon_error_correction
-     *      * Galois Field:                     https://en.wikipedia.org/wiki/Finite_field_arithmetic
-     */
     LOGI("Executing Reed Solomon usage sample...");
 
     std::cout << std::endl;
