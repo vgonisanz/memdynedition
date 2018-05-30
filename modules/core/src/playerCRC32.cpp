@@ -21,7 +21,7 @@ void PlayerCRC32::useBomb()
 {
     if (_items.bombs > 0)
     {
-        checkIntegrity();
+        checkIntegrity();   /* Detect if at this time the value has been modified */
 
         /* Edit value manually */
         _items.bombs -= 1;
@@ -41,11 +41,12 @@ void PlayerCRC32::dropCoin()
 {
     if (_items.coins > 0)
     {
-        checkIntegrity();
+        checkIntegrity();   /* Detect if at this time the value has been modified */
 
-        /* Assign value automatically */
-        if(!_secItems.assign<uint32_t>(&_items.coins, _items.coins - 1))
-            LOGE("Error assigning coins");
+        /* Assign value automatically sleeping 1s, if variable is locked is detected! */
+        const uint32_t sleepInUs = 1000;
+        if(!_secItems.assign<uint32_t>(&_items.coins, _items.coins - 1, sleepInUs))
+            LOGE("Error assigning coins, external modification after wait a little.");
 
         LOGI("Dropping a coin! remaining: %u", _items.coins);
         LOGI("New items CRC32: 0x%08X", _secItems.getCRC32());

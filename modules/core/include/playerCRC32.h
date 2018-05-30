@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "player.h"
-#include "securizer.h"
+#include "securizerCRC32.h"
 
 namespace memdynedition
 {
@@ -17,7 +17,7 @@ public:
     void useBomb() override;
     void dropCoin() override;
 private:
-    Securizer _secItems;
+    SecurizerCRC32 _secItems;
 
     bool checkIntegrity() override;
 };
