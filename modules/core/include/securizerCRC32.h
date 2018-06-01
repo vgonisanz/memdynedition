@@ -1,16 +1,19 @@
-#ifndef __SECURIZER_H
-#define __SECURIZER_H
+#ifndef __SECURIZERCRC32_H
+#define __SECURIZERCRC32_H
 
 #include <stdint.h>
 #include <iostream>
+#include <chrono>
+#include <thread>
+
 namespace memdynedition
 {
 
-class Securizer
+class SecurizerCRC32
 {
 public:
-    Securizer();
-    ~Securizer() = default;
+    SecurizerCRC32();
+    ~SecurizerCRC32() = default;
 
     /*
      * \brief Update a value if is a protected memory.
@@ -21,7 +24,7 @@ public:
      * real time OS.
      */
     template <typename T>
-    bool assign(T* variable, T value)
+    bool assign(T* variable, T value, uint32_t us = 0)
     {
         /* Check if is my protected data using byte address */
         if((uint8_t *)variable < _data)
@@ -34,9 +37,15 @@ public:
         updateCRC32();
 
         /*
-         * Wait or observer to monitor this value after a while? It is not detected here,
-         * but it is detected the next time. It depends external process that block the value
+         * Wait or observer to monitor this value after a while? It is not detected here
+         * with low sleep time,
+         * but it is detected the next time. It depends external process that block the value.
+         * Other techniques like observer or threads checking values could be used.
+         * Never mind, if you don't wait here, the next time you gonna update the value
+         * will be detected calling check function.
          */
+        std::this_thread::sleep_for(std::chrono::milliseconds(us));
+
         bool result = (*variable == value);
 
         /* Critic section END */
@@ -82,4 +91,4 @@ private:
 
 }   /* namespace memdynedition */
 
-#endif /* __SECURIZER_H */
+#endif /* __SecurizerCRC32_H */

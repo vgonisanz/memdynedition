@@ -20,7 +20,7 @@
 
 # Sample step I: Set PROJ_NAME variable
 # ------------------------------------------------------------------------------------------------------
-set(PROJ_NAME crc32test)
+set(PROJ_NAME rsstruct)
 project(${PROJ_NAME})
 message("+ Adding sample ${PROJ_NAME} ")
 

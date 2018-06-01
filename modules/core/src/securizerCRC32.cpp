@@ -1,25 +1,25 @@
-#include "securizer.h"
+#include "securizerCRC32.h"
 #include "crc32.h"
 #include "bitopts.h"
 
-#define LOG_TAG "securizer"
+#define LOG_TAG "securizerCRC32"
 #include "config.h"
 
 namespace memdynedition
 {
 
-Securizer::Securizer():
+SecurizerCRC32::SecurizerCRC32():
 _crc32(0)
 {
 };
 
-void Securizer::setData(void *data, uint32_t size)
+void SecurizerCRC32::setData(void *data, uint32_t size)
 {
     _data = data;
     _size = size;
 }
 
-uint32_t Securizer::process()
+uint32_t SecurizerCRC32::process()
 {
     uint8_t *buffer = (uint8_t *)_data;
     uint32_t result = 0;    /* seed null */
@@ -28,13 +28,13 @@ uint32_t Securizer::process()
     return swap_uint32(result);
 }
 
-uint32_t Securizer::updateCRC32()
+uint32_t SecurizerCRC32::updateCRC32()
 {
     _crc32 = process();
     return _crc32;
 }
 
-bool Securizer::check()
+bool SecurizerCRC32::check()
 {
     return (process() == _crc32);
 }

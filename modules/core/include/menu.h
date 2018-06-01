@@ -9,8 +9,6 @@
 #include <functional>
 #include <algorithm>
 
-#include "player.h"
-
 namespace memdynedition
 {
 

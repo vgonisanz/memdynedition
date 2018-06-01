@@ -20,14 +20,14 @@
 
 # Sample step I: Set PROJ_NAME variable
 # ------------------------------------------------------------------------------------------------------
-set(PROJ_NAME basicsample)
+set(PROJ_NAME rsfullrecovery)
 project(${PROJ_NAME})
 message("+ Adding sample ${PROJ_NAME} ")
 
 # Sample step II: Include directories with headers
 # ------------------------------------------------------------------------------------------------------
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )	    	              # This projects' includes
-include_directories( ${${PROJ_MAIN_NAME}_PATH_MAIN}/modules/core/include/ )       # Core includes
+include_directories( ${${PROJ_MAIN_NAME}_EXTRA_INCS} )                            # Core includes
 
 # Sample step II: Create variables with all includes and sources
 # ------------------------------------------------------------------------------------------------------
@@ -59,4 +59,4 @@ install(TARGETS ${PROJ_NAME}
         )
 
 #PRINTBASICINFO(${PROJ_NAME})						# Macro cmake_tools to print, uncomment to add info
-message("- Module ${PROJ_NAME} added!")				# Out info
+message("- Sample ${PROJ_NAME} added!")				# Out info

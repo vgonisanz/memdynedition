@@ -20,14 +20,14 @@
 
 # Sample step I: Set PROJ_NAME variable
 # ------------------------------------------------------------------------------------------------------
-set(PROJ_NAME crc32test)
+set(PROJ_NAME playersample)
 project(${PROJ_NAME})
 message("+ Adding sample ${PROJ_NAME} ")
 
 # Sample step II: Include directories with headers
 # ------------------------------------------------------------------------------------------------------
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )	    	              # This projects' includes
-include_directories( ${${PROJ_MAIN_NAME}_EXTRA_INCS} )                            # Core includes
+include_directories( ${${PROJ_MAIN_NAME}_PATH_MAIN}/modules/core/include/ )       # Core includes
 
 # Sample step II: Create variables with all includes and sources
 # ------------------------------------------------------------------------------------------------------

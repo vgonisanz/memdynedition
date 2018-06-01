@@ -7,6 +7,7 @@ project(${PROJ_NAME})
 # Module step II: Add the given directories to those the compiler uses to search for include files
 # ------------------------------------------------------------------------------------------------------
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )	    	              # This projects' includes
+include_directories( ${${PROJ_MAIN_NAME}_EXTRA_INCS} )                            # Core includes
 
 # Module step III: Create variables with all includes and sources. You can add them manually in a VAR.
 # ------------------------------------------------------------------------------------------------------
