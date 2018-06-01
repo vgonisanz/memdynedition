@@ -91,4 +91,4 @@ private:
 
 }   /* namespace memdynedition */
 
-#endif /* __SecurizerCRC32CRC32_H */
+#endif /* __SecurizerCRC32_H */

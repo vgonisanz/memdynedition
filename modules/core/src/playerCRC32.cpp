@@ -19,10 +19,10 @@ PlayerCRC32::PlayerCRC32()
 
 void PlayerCRC32::useBomb()
 {
+    checkIntegrity();   /* Detect if at this time the value has been modified */
+
     if (_items.bombs > 0)
     {
-        checkIntegrity();   /* Detect if at this time the value has been modified */
-
         /* Edit value manually */
         _items.bombs -= 1;
         LOGI("Using bomb! remaining: %u", _items.bombs);
@@ -39,10 +39,10 @@ void PlayerCRC32::useBomb()
 
 void PlayerCRC32::dropCoin()
 {
+    checkIntegrity();   /* Detect if at this time the value has been modified */
+    
     if (_items.coins > 0)
     {
-        checkIntegrity();   /* Detect if at this time the value has been modified */
-
         /* Assign value automatically sleeping 1s, if variable is locked is detected! */
         const uint32_t sleepInUs = 1000;
         if(!_secItems.assign<uint32_t>(&_items.coins, _items.coins - 1, sleepInUs))
