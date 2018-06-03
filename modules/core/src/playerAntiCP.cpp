@@ -1,19 +1,19 @@
-#include "playerCP.h"
+#include "playerAntiCP.h"
 
-#define LOG_TAG "playerCP"
+#define LOG_TAG "playerAntiCP"
 #include "config.h"
 
 namespace memdynedition
 {
 
-PlayerCP::PlayerCP()
+PlayerAntiCP::PlayerAntiCP()
 {
-    LOGI("This player have a copy to player one data");
+    LOGI("This player have a AntiCopy to player one data");
     _secItems.setData(&_items, sizeof(_items));
     LOGD("Set up secure struct items with size: %u", sizeof(_items));
 }
 
-void PlayerCP::useBomb()
+void PlayerAntiCP::useBomb()
 {
     checkIntegrity();   /* Detect if at this time the value has been modified */
 
@@ -30,7 +30,7 @@ void PlayerCP::useBomb()
     }
 }
 
-void PlayerCP::dropCoin()
+void PlayerAntiCP::dropCoin()
 {
     checkIntegrity();   /* Detect if at this time the value has been modified */
 
@@ -47,7 +47,7 @@ void PlayerCP::dropCoin()
     }
 }
 
-bool PlayerCP::checkIntegrity()
+bool PlayerAntiCP::checkIntegrity()
 {
     /* Check */
     bool isValid = _secItems.check();

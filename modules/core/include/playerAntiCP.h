@@ -4,6 +4,8 @@
 #include <stdint.h>
 
 #include "player.h"
+#include "securizerAntiCP.h"
+
 
 namespace memdynedition
 {
@@ -16,6 +18,8 @@ public:
     void useBomb() override;
     void dropCoin() override;
 private:
+    SecurizerAntiCP _secItems;
+
     bool checkIntegrity() override;
 };
 
