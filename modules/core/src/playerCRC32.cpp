@@ -40,7 +40,7 @@ void PlayerCRC32::useBomb()
 void PlayerCRC32::dropCoin()
 {
     checkIntegrity();   /* Detect if at this time the value has been modified */
-    
+
     if (_items.coins > 0)
     {
         /* Assign value automatically sleeping 1s, if variable is locked is detected! */
