@@ -27,17 +27,21 @@ void SecurizerAntiCP::setData(void *data, uint32_t size)
     _data = data;
     _size = size;
     _anticopy = malloc(size);
-    update();   /* Make first copy */
+    update();                   /* Make first copy */
 }
 
 void SecurizerAntiCP::update()
 {
     std::memcpy(_anticopy, _data, _size);
+    reverse();                  /* !copy */
 }
 
 bool SecurizerAntiCP::check()
 {
-    return !(std::memcmp(_data, _anticopy, _size));
+    reverse();  /* copy to compare */
+    bool result = std::memcmp(_data, _anticopy, _size); /* Better !cmp, but this works */
+    reverse();  /* !copy */
+    return !(result);
 }
 
 void SecurizerAntiCP::restore()
@@ -47,10 +51,11 @@ void SecurizerAntiCP::restore()
 
 void SecurizerAntiCP::reverse()
 {
-    if(!_anticopy)
-        return;
-
-    /* for */
+    size_t len = _size;
+    uint8_t *d = (uint8_t *)_anticopy;
+    const uint8_t *s = (const uint8_t *)_anticopy;
+    while (len--)
+        *d++= *s++;
 }
 
 }   /* namespace memdynedition */
