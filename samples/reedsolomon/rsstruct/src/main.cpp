@@ -76,6 +76,7 @@ bool initCheck()
 
     std::cout << "--- Reed-Solomon [n, k, n − k + 1] q-code - [" << code_length << ", " << fec_length << ", " << data_length <<
                                                                 "]" << std::endl << std::endl;
+    return true;
 }
 
 /**
@@ -220,7 +221,8 @@ int main()
     std::cout << "\tcorrecting t " << (fec_length >> 1) << " errors." << std::endl;
     std::cout << std::endl;
 
-    initCheck();
+    if(!initCheck())
+        return -1;
 
     std::string message;
     schifra::reed_solomon::block<code_length,fec_length> block;

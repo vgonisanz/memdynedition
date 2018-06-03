@@ -1,23 +1,19 @@
-#include "playerCRC32.h"
+#include "playerAntiCP.h"
 
-#define LOG_TAG "playerCRC32"
+#define LOG_TAG "playerAntiCP"
 #include "config.h"
 
 namespace memdynedition
 {
 
-PlayerCRC32::PlayerCRC32()
+PlayerAntiCP::PlayerAntiCP()
 {
-    LOGI("Adding CRC32 to player one");
+    LOGI("This player have a AntiCopy to player one data");
     _secItems.setData(&_items, sizeof(_items));
     LOGD("Set up secure struct items with size: %u", sizeof(_items));
-
-    /* Update CRC */
-    uint32_t itemsCRC32 = _secItems.updateCRC32();
-    LOGI("Initial items CRC32: 0x%08X", itemsCRC32);
 }
 
-void PlayerCRC32::useBomb()
+void PlayerAntiCP::useBomb()
 {
     checkIntegrity();   /* Detect if at this time the value has been modified */
 
@@ -25,11 +21,8 @@ void PlayerCRC32::useBomb()
     {
         /* Edit value manually */
         _items.bombs -= 1;
+        _secItems.update();
         LOGI("Using bomb! remaining: %u", _items.bombs);
-
-        /* Update manually CRC32 */
-        uint32_t itemsCRC32 = _secItems.updateCRC32();
-        LOGI("New items CRC32: 0x%08X", itemsCRC32);
     }
     else
     {
@@ -37,19 +30,16 @@ void PlayerCRC32::useBomb()
     }
 }
 
-void PlayerCRC32::dropCoin()
+void PlayerAntiCP::dropCoin()
 {
     checkIntegrity();   /* Detect if at this time the value has been modified */
 
     if (_items.coins > 0)
     {
-        /* Assign value automatically sleeping 1s, if variable is locked is detected! */
-        const uint32_t sleepInUs = 1000;
-        if(!_secItems.assign<uint32_t>(&_items.coins, _items.coins - 1, sleepInUs))
-            LOGE("Error assigning coins, external modification after wait a little.");
-
+        /* Edit value manually */
+        _items.coins -= 1;
+        _secItems.update();
         LOGI("Dropping a coin! remaining: %u", _items.coins);
-        LOGI("New items CRC32: 0x%08X", _secItems.getCRC32());
     }
     else
     {
@@ -57,7 +47,7 @@ void PlayerCRC32::dropCoin()
     }
 }
 
-bool PlayerCRC32::checkIntegrity()
+bool PlayerAntiCP::checkIntegrity()
 {
     /* Check */
     bool isValid = _secItems.check();
@@ -68,6 +58,7 @@ bool PlayerCRC32::checkIntegrity()
     else
     {
         LOGE("The data was externally modified!!");
+        _secItems.restore();
     }
     return isValid;
 }

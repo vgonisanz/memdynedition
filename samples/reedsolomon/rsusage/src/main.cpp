@@ -77,6 +77,7 @@ bool initCheck()
 
     std::cout << "--- Reed-Solomon [n, k, n − k + 1] q-code - [" << code_length << ", " << data_length << ", " << fec_length <<
                                                                 "]" << std::endl << std::endl;
+    return true;
 }
 
 bool encode(std::string &message, schifra::reed_solomon::block<code_length,fec_length> &block)
@@ -166,6 +167,7 @@ bool process(std::string message, const std::size_t& error_count, const std::siz
     std::cout << " and decoder Parameters [" << decoder_t::trait::code_length << ","
                                         << decoder_t::trait::data_length << ","
                                         << decoder_t::trait::fec_length  << "]" << std::endl << std::endl;
+    return true;
 }
 
 int main()
@@ -199,7 +201,8 @@ int main()
                             "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
                             "1234567890123456789012345678901234567890XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
-    initCheck();
+    if(!initCheck())
+        return -1;
 
     /*  Process messages with Reed Solomon Code Parameters 255 code length and 32 redundance and adding errors in some steps */
     std::cout << "--- Processing message: Message fit perfectly - No errors introduced" << std::endl;
